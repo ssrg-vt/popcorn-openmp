@@ -24,7 +24,7 @@ This specifies the two machines ```echo7``` and ```fox7``` are the machines in t
 
 ### Building applications
 
-All benchmarks utilize the Makefile contained in the repository root.  Additionally, they a script to automate some of the processes for packaging and distributing the benchmarks.
+All benchmarks utilize the Makefile contained in the repository root.  Additionally, they use a script to automate some of the processes for packaging and distributing the benchmarks.
 
 To build a benchmark, enter the application's directory and execute the ```make.sh``` script:
 
@@ -32,16 +32,17 @@ To build a benchmark, enter the application's directory and execute the ```make.
 $ cd blackscholes
 $ ls
 blackscholes.c  inputs  Makefile  make.sh
-$ ./make.sh -noscp
+$ ./make.sh
 ... (build output) ...
 ```
 
-Without any extra arguments, the command will build the application and try to copy the binaries to the heterogeneous setup.  Possible argument:
+Without any extra arguments, the command will build the application and try to copy the binaries to the heterogeneous setup.  Here are the possible arguments:
 
 ```
 -heterogeneous : copy binaries to the heterogeneous setup (default)
 -homogeneous   : copy binaries to the homogeneous setup
 -vm            : copy binaries to the virtual machine setup
+-noscp         : don't copy binaries anywhere
 ```
 
 Note that for some benchmarks the build system creates a "runnable" which encapsulates both the binary and all other command line arguments needed to launch the application.  For example:
@@ -50,44 +51,44 @@ Note that for some benchmarks the build system creates a "runnable" which encaps
 $ ./make.sh
 ... (build output) ...
 Creating Popcorn multi-ISA tarball 'blackscholes.tar.bz2'
-Creating a runnable script for 'blackscholes THREADS SET_PATH_TO_INPUT\/in_10M.txt \/dev\/null' -> blackscholes-run
+Creating a runnable script for 'blackscholes THREADS \/home\/rlyerly\/inputs\/blackscholes\/in_10M.txt \/dev\/null' -> blackscholes-run
 $ ls
 blackscholes_aarch64    blackscholes.c    blackscholes_x86-64    build_aarch64  inputs    make.sh
 blackscholes_aarch64.o  blackscholes-run  blackscholes_x86_64.o  build_x86-64   Makefile
 ```
 
-Here, ```blackscholes-run``` is a runnable created by the build system which helps automate running the application.  All the user needs to do is supply the number of threads via ```-t``` (run with ```-h``` for more options).  Note that for all applications, even those which are not created as runnables, the ```-t``` flag should be used to set the number of threads.
+Here, ```blackscholes-run``` is a runnable created by the build system which helps automate running the application.  All the user needs to do is supply the number of threads via ```-t``` (run with ```-h``` for more options).  Note that for all applications, even those which are not created as runnables, the ```-t``` flag should be used to set the number of threads.  Some of the benchmarks also require input files; the "inputs" directory inside the benchmark directory contains the files.  You'll need to copy the input file to the leader machine and customize that benchmark's "make.sh" with the location of the input file on the leader.
 
 As mentioned previously, several of the benchmarks contain small optimizations.  To enable them, build with the ```-type``` flag:
 
 ```
-$ ./make -type=optimized
+$ ./make.sh -type=optimized
 ```
 
 ### Running applications
 
-By default the applications have the OpenMP loop iteration scheduler set to "runtime", meaning the user can select the scheduler via the "OMP_SCHEDULE" environment variable:
+By default APPLICATIOns have the OpenMP loop iteration scheduler set to "runtime", meaning the user can select the scheduler via the "OMP_SCHEDULE" environment variable:
 
 ```
 $ OMP_SCHEDULE=STATIC ./blackscholes-run -t 16
 ```
 
-This sets the scheduler to OpenMP's static scheduler.
+This runs the application with 16 threads and sets the scheduler to OpenMP's static scheduler.
 
-For Popcorn execution, the user can specify thread placement in the cluster via the "POPCORN_PLACES" environment variable:
+For Popcorn execution, the user can specify thread placement in the cluster by using the "POPCORN_PLACES" environment variable to place threads on each node:
 
 ```
-$ OMP_SCHEDULE=STATIC POPCORN_PLACES={8},{8} ./blackscholes-run -t 16
+$ OMP_SCHEDULE=STATIC POPCORN_PLACES={8},{8},{8} ./blackscholes-run -t 24
 ```
 
-This places 8 threads on nodes 0 and 1, respectively.  The user can specify arbitrary thread placements for up to 32 nodes (the current Popcorn Linux max) by adding extra comma-separated numbers in curly-braces.  If the user wants to place the same number of threads on all available nodes in the system, they can use the "nodes" keyword.  For example on an 8-node setup:
+This places 8 threads on nodes 0, 1 and 2, respectively.  The user can specify arbitrary thread placements for up to 32 nodes (the current Popcorn Linux max) by adding extra comma-separated numbers in curly-braces.  If the user wants to place the same number of threads on all available nodes in the system, they can use the "nodes" keyword.  For example on an 8-node setup:
 
 ```
 $ OMP_SCHEDULE=STATIC POPCORN_PLACES="nodes(8)" ./blackscholes-run -t 64
 ```
 
-This places 8 threads on each of the nodes in the system.  To summarize, the user must both supply the **number** of threads and the thread **placement**.
+This places 8 threads on each of the 8 nodes in the system.  To summarize, the user must both supply the **number** of threads and the thread **placement**.
 
-[1] SNU NPB Suite -- http://aces.snu.ac.kr/software/snu-npb/
-[2] PARSEC -- http://parsec.cs.princeton.edu/
+[1] SNU NPB Suite -- http://aces.snu.ac.kr/software/snu-npb
+[2] PARSEC -- http://parsec.cs.princeton.edu
 [3] Rodinia -- http://lava.cs.virginia.edu/Rodinia/download_links.htm
