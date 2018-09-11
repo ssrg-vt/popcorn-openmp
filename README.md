@@ -89,6 +89,6 @@ $ OMP_SCHEDULE=STATIC POPCORN_PLACES="nodes(8)" ./blackscholes-run -t 64
 
 This places 8 threads on each of the 8 nodes in the system.  To summarize, the user must both supply the **number** of threads and the thread **placement**.
 
-[1] SNU NPB Suite -- http://aces.snu.ac.kr/software/snu-npb
-[2] PARSEC -- http://parsec.cs.princeton.edu
+[1] SNU NPB Suite -- http://aces.snu.ac.kr/software/snu-npb/  
+[2] PARSEC -- http://parsec.cs.princeton.edu/  
 [3] Rodinia -- http://lava.cs.virginia.edu/Rodinia/download_links.htm
