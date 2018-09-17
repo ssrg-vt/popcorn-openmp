@@ -35,6 +35,8 @@
 #include "npbparams.h"
 #include "type.h"
 
+#include "sync.h"
+
 //---------------------------------------------------------------------
 //  Note: please observe that in the routine conj_grad three 
 //  implementations of the sparse matrix-vector multiply have

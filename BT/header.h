@@ -53,6 +53,8 @@
 #include "npbparams.h"
 #include "type.h"
 
+#include "sync.h"
+
 #define AA            0
 #define BB            1
 #define CC            2

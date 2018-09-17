@@ -518,6 +518,7 @@ static void conj_grad(int colidx[],
     //       The unrolled-by-8 version below is significantly faster
     //       on the Cray t3d - overall speed of code is 1.5 times faster.
 
+    popcorn_tso_begin_manual();
     #pragma omp for schedule(runtime)
     for (j = 0; j < lastrow - firstrow + 1; j++) {
       suml = 0.0;
@@ -526,6 +527,8 @@ static void conj_grad(int colidx[],
       }
       q[j] = suml;
     }
+    popcorn_tso_fence_manual();
+    popcorn_tso_end_manual();
 
     /*
     for (j = 0; j < lastrow - firstrow + 1; j++) {
@@ -602,10 +605,13 @@ static void conj_grad(int colidx[],
     //---------------------------------------------------------------------
     // p = r + beta*p
     //---------------------------------------------------------------------
+    popcorn_tso_begin_manual();
     #pragma omp for schedule(runtime)
     for (j = 0; j < lastcol - firstcol + 1; j++) {
       p[j] = r[j] + beta*p[j];
     }
+    popcorn_tso_fence_manual();
+    popcorn_tso_end_manual();
   } // end of do cgit=1,cgitmax
 
   //---------------------------------------------------------------------

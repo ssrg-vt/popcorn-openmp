@@ -45,6 +45,7 @@
 #include "type.h"
 #include "timers.h"
 
+#include "sync.h"
 
 /* common /global/ */
 extern int grid_points[3], nx2, ny2, nz2;

@@ -10,7 +10,7 @@ X86_64_LIBGCC := $(shell dirname \
 ###############################################################################
 
 # Default optimization level if application Makefile did not specify
-OPT ?= -O2
+OPT ?= -O2 -g -ggdb #-type=optimized
 
 # Compiler
 CC           := $(POPCORN)/bin/clang

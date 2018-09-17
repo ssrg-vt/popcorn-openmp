@@ -139,6 +139,7 @@ void z_solve()
     //---------------------------------------------------------------------
     // FORWARD ELIMINATION  
     //---------------------------------------------------------------------
+    popcorn_tso_begin_manual();
     for (k = 0; k <= grid_points[2]-3; k++) {
       k1 = k + 1;
       k2 = k + 2;
@@ -161,6 +162,8 @@ void z_solve()
         }
       }
     }
+    popcorn_tso_fence_manual();
+    popcorn_tso_end_manual();
 
     //---------------------------------------------------------------------
     // The last two rows in this grid block are a bit different, 
